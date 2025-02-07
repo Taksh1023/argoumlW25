@@ -42,10 +42,10 @@ This project is the virtual project that includes all core subprojects.
   <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
   
-  <properties>
-    <!-- Used in parent to deploy site on github. -->
+<!--   <properties>
+    <!-- Used in parent to deploy site on github. 
     <github.site.repositoryName>argouml</github.site.repositoryName>
-  </properties>
+  </properties> -->
 
   <scm>
     <url>${github.site.org}/${github.site.repositoryName}</url>

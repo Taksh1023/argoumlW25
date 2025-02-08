@@ -189,7 +189,7 @@ public class Main {
                 performCommandsInternal(commands);
                 commands = null;
 
-                System.out.println("Exiting because we are running in batch.");
+                logger.info("Exiting because we are running in batch.");
                 new ActionExit().doCommand(null);
                 return;
             }

@@ -238,7 +238,7 @@ public class Main {
             postLoadThead.start();
 
             LOG.log(Level.INFO, "\nprofile of load time ############");
-            for (Enumeration i = st.result(); i.hasMoreElements();) {
+            for (Enumeration<String> i = st.result(); i.hasMoreElements();) {
                 LOG.log(Level.INFO, "{0}", i.nextElement());
             }
             LOG.log(Level.INFO, "#################################\n");

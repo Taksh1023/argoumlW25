@@ -127,7 +127,9 @@ public class Main {
     private static final String DEFAULT_MODEL_IMPLEMENTATION =
         "org.argouml.model.mdr.MDRModelImplementation";
 
-    private static List<Runnable> postLoadActions = new ArrayList<>();
+
+
+        private static List<Runnable> postLoadActions = new ArrayList<>();
 
 
     private static boolean doSplash = true;

@@ -220,7 +220,6 @@ public class Main {
             if (splash != null) {
                 splash.setVisible(false);
                 splash.dispose();
-                splash = null;
             }
 
             performCommands(commands);

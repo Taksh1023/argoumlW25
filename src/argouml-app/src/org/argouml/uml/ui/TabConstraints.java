@@ -698,7 +698,7 @@ public class TabConstraints extends AbstractArgoJPanel
             }
         }
 
-                private void notifyConstraintChangeListeners(int nIdx, Object mcOld, Object mcNew) {
+        private void notifyConstraintChangeListeners(int nIdx, Object mcOld, Object mcNew) {
             // Guaranteed to return a non-null array
             Object[] listeners = theMEllListeners.getListenerList();
             ConstraintChangeEvent cce = null;

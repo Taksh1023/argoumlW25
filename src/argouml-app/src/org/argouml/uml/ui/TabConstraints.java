@@ -698,20 +698,14 @@ public class TabConstraints extends AbstractArgoJPanel
             }
         }
 
-        protected void fireConstraintDataChanged(
-                         int nIdx,
-                         Object mcOld,
-                         Object mcNew) {
+                private void notifyConstraintChangeListeners(int nIdx, Object mcOld, Object mcNew) {
             // Guaranteed to return a non-null array
             Object[] listeners = theMEllListeners.getListenerList();
-
             ConstraintChangeEvent cce = null;
-
-            // Process the listeners last to first, notifying
-            // those that are interested in this event
+        
+            // Process the listeners last to first, notifying those that are interested in this event
             for (int i = listeners.length - 2; i >= 0; i -= 2) {
                 if (listeners[i] == ConstraintChangeListener.class) {
-                    // Lazily create the event:
                     if (cce == null) {
                         cce = new ConstraintChangeEvent(
                             this,
@@ -719,39 +713,15 @@ public class TabConstraints extends AbstractArgoJPanel
                             new CR(mcOld, nIdx),
                             new CR(mcNew, nIdx));
                     }
-
                     ((ConstraintChangeListener) listeners[i + 1])
                         .constraintDataChanged(cce);
                 }
             }
         }
-
-        protected void fireConstraintNameChanged(
-                         int nIdx,
-                         Object mcOld,
-                         Object mcNew) {
-            // Guaranteed to return a non-null array
-            Object[] listeners = theMEllListeners.getListenerList();
-
-            ConstraintChangeEvent cce = null;
-
-            // Process the listeners last to first, notifying
-            // those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2) {
-                if (listeners[i] == ConstraintChangeListener.class) {
-                    // Lazily create the event:
-                    if (cce == null) {
-                        cce = new ConstraintChangeEvent(
-                            this,
-                            nIdx,
-                            new CR(mcOld, nIdx),
-                            new CR(mcNew, nIdx));
-                    }
-
-                    ((ConstraintChangeListener) listeners[i + 1])
-                        .constraintNameChanged(cce);
-                }
-            }
+        
+        // Replace duplicate calls with this method
+        protected void fireConstraintDataChanged(int nIdx, Object mcOld, Object mcNew) {
+            notifyConstraintChangeListeners(nIdx, mcOld, mcNew);
         }
     }
 

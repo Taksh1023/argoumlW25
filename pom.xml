@@ -33,28 +33,24 @@
 
   <name>argouml-core</name>
   <description>
-    The group of core ArgoUML projects.
-    This project is the virtual project that includes all core subprojects.
+The group of core argouml projects.
+This project is the virtual project that includes all core subprojects.
   </description>
 
-  <!-- ✅ Fixed Properties Section -->
   <properties>
-    <sonar.organization>taksh1023</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- Used in parent to deploy site on github. -->
     <github.site.repositoryName>argouml</github.site.repositoryName>
-  </properties> 
-
-  <!-- ✅ Fixed SCM Section -->
+  </properties>
   <scm>
-    <url>https://github.com/taksh1023/argouml</url>
-    <connection>scm:git:https://github.com/taksh1023/argouml.git</connection>
-    <developerConnection>scm:git@github.com:taksh1023/argouml.git</developerConnection>
+    <url>${github.site.org}/${github.site.repositoryName}</url>
+    <connection>scm:git:${github.site.org}/${github.site.repositoryName}.git</connection>
+    <developerConnection>scm:git:${gerrithub.site.org.ssh}/${github.site.repositoryName}.git</developerConnection>
   </scm>
 
   <distributionManagement>
      <site>
         <id>${project.artifactId}-site</id>
-        <url>https://pages.github.com/taksh1023/argouml</url>
+        <url>${github.site.pages}/${github.site.repositoryName}</url>
      </site>
   </distributionManagement>
 
@@ -72,5 +68,4 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
-
 </project>

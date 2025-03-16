@@ -1,5 +1,5 @@
 /* $Id: $
- *****************************************************************************
+ ***************************
  * Copyright (c) 2014 Contributors - see below
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,7 @@
  * Contributors:
  *    Bob Tarling
  *    Michiel van der Wulp
- *****************************************************************************/
+ ***************************/
 
 package org.argouml.ui.cmd;
 
@@ -71,103 +71,61 @@ public class RelationshipActionFactory implements ContextActionFactory {
         
         return list;
     }
-    
-    private ActionList getAssociationFromActions(final Object element, ArgoDiagram diagram) {
-        ActionList al= new ActionList("Add Associations from ");
-        if (Model.getFacade().isAClass(element)) {
-            Collection associationEnds = Model.getFacade().getAssociationEnds(element);
-            
-            for (Object associationEnd : associationEnds) {
-                Object association = Model.getFacade().getAssociation(associationEnd);
-                
-                // Only show actions for associations not already on diagram
-                if (diagram.presentationFor(association) == null) {
-                    Collection connections = Model.getFacade().getConnections(association);
-                    if (connections.size() == 2) {
-                        for (Object connection : connections) {
-                            if (connection != associationEnd) {
-                                final String direction;
-                                if (Model.getFacade().isNavigable(associationEnd)) {
-                                    Object oppositeClass = Model.getFacade().getClassifier(connection);
-                                    al.add(new AddAssociationAction(
-                                            "Add association from " +
-                                            Model.getFacade().getName(oppositeClass),
-                                            diagram, element, association, oppositeClass));
-                                }
-                            } 
-                        }
-                    }
-                }
-            }
-        }
-        return al;
-    }
-    
-    private ActionList getAssociationToActions(final Object element, ArgoDiagram diagram) {
-        ActionList al= new ActionList("Add Associations to ");
-        if (Model.getFacade().isAClass(element)) {
-            Collection associationEnds = Model.getFacade().getAssociationEnds(element);
-            
-            for (Object associationEnd : associationEnds) {
-                Object association = Model.getFacade().getAssociation(associationEnd);
-                
-                // Only show actions for associations not already on diagram
-                if (diagram.presentationFor(association) == null) {
-                    Collection connections = Model.getFacade().getConnections(association);
-                    if (connections.size() == 2) {
-                        for (Object connection : connections) {
-                            if (connection != associationEnd) {
-                                final String direction;
-                                if (!Model.getFacade().isNavigable(associationEnd)) {
-                                    Object oppositeClass = Model.getFacade().getClassifier(connection);
-                                    al.add(new AddAssociationAction(
-                                            "Add association to " +
-                                            Model.getFacade().getName(oppositeClass),
-                                            diagram, element, association, oppositeClass));
-                                }
-                            } 
-                        }
-                    }
-                }
-            }
-        }
-        return al;
-    }
-    
-    private ActionList getAssociations(final Object element, ArgoDiagram diagram) {
-        ActionList al= new ActionList("Add Associations");
-        if (Model.getFacade().isAClass(element)) {
-            Collection associationEnds = Model.getFacade().getAssociationEnds(element);
-            
-            for (Object associationEnd : associationEnds) {
-                Object association = Model.getFacade().getAssociation(associationEnd);
-                
-                // Only show actions for associations not already on diagram
-                if (diagram.presentationFor(association) == null) {
-                    Collection connections = Model.getFacade().getConnections(association);
-                    if (connections.size() == 2) {
-                        for (Object connection : connections) {
-                            if (connection != associationEnd) {
-                                final String direction;
-                                if (Model.getFacade().isNavigable(associationEnd)) {
+
+private ActionList getAssociationActions(final Object element, ArgoDiagram diagram, String directionPrefix) {
+    ActionList al = new ActionList(directionPrefix + " Associations");
+    if (Model.getFacade().isAClass(element)) {
+        Collection associationEnds = Model.getFacade().getAssociationEnds(element);
+
+        for (Object associationEnd : associationEnds) {
+            Object association = Model.getFacade().getAssociation(associationEnd);
+
+            // Only show actions for associations not already on diagram
+            if (diagram.presentationFor(association) == null) {
+                Collection connections = Model.getFacade().getConnections(association);
+                if (connections.size() == 2) {
+                    for (Object connection : connections) {
+                        if (connection != associationEnd) {
+                            final String direction;
+                            if (Model.getFacade().isNavigable(associationEnd)) {
+                                // If it's navigable, we need to handle "from" or "to" logic
+                                if ("from".equals(directionPrefix)) {
                                     direction = "from";
-                                } else {
+                                } else if ("to".equals(directionPrefix)) {
                                     direction = "to";
+                                } else {
+                                    direction = directionPrefix; // for "Add Associations"
                                 }
                                 Object oppositeClass = Model.getFacade().getClassifier(connection);
                                 al.add(new AddAssociationAction(
                                         "Add association " + direction + " " +
                                         Model.getFacade().getName(oppositeClass),
                                         diagram, element, association, oppositeClass));
-                            } 
+                            }
                         }
                     }
                 }
             }
         }
-        return al;
     }
-    
+    return al;
+}
+
+// This method can be used for "Add Associations"
+public ActionList getAssociations(final Object element, ArgoDiagram diagram) {
+    return getAssociationActions(element, diagram, ""); // No specific direction
+}
+
+// This method can be used for "Add Associations from"
+public ActionList getAssociationFromActions(final Object element, ArgoDiagram diagram) {
+    return getAssociationActions(element, diagram, "from"); // "from" direction
+}
+
+// This method can be used for "Add Associations to"
+public ActionList getAssociationToActions(final Object element, ArgoDiagram diagram) {
+    return getAssociationActions(element, diagram, "to"); // "to" direction
+}
+
     private ActionList getDependancyToActions(final Object element, ArgoDiagram diagram) {
         ActionList al= new ActionList("Add Dependencies to ");
             

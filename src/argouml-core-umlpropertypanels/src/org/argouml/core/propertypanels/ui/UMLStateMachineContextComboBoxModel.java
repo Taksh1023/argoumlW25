@@ -122,27 +122,13 @@ class UMLStateMachineContextComboBoxModel
         private static final long serialVersionUID = -8118983979324112900L;
 
         /**
-         * Constructor for ActionSetCompositeStateConcurrent.
+         * Returns a shared action to set the context of the StateMachine.
+         *
+         * Uses the common ActionSetContextCommon to avoid code duplication.
          */
-        protected ActionSetContextStateMachine() {
-            super(Translator.localize("action.set"), null);
-            // Set the tooltip string:
-            putValue(Action.SHORT_DESCRIPTION, 
-                    Translator.localize("action.set"));
+        public Action getAction() {
+            return new ActionSetContextCommon();
         }
 
-        /*
-         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-         */
-        public void actionPerformed(ActionEvent e) {
-            super.actionPerformed(e);
-            UMLComboBox source = (UMLComboBox) e.getSource();
-            Object target = source.getTarget();
-            if (Model.getFacade().getContext(target)
-                    != source.getSelectedItem()) {
-                Model.getStateMachinesHelper().setContext(
-                        target, source.getSelectedItem());
-            }
-        }
     }
 }

@@ -24,19 +24,10 @@ import java.util.List;
  *
  */
 class FigAcceptEventPoly extends FigGravityPoly {
-    
+
     FigAcceptEventPoly(int x, int y, int w, int h, Color lineColor, Color fillColor) {
         super();
-        final int[] xs = new int[6];
-        final int[] ys = new int[6];
-        xs[0] = x;         ys[0] = y;
-        xs[1] = x + w;     ys[1] = y;
-        xs[2] = x + w;     ys[2] = y + h;
-        xs[3] = x;         ys[3] = y + h;
-        xs[4] = x + h / 2; ys[4] = y + h / 2;
-        xs[5] = x;         ys[5] = y;
-        final Polygon p = new Polygon(xs, ys, 6);
-        setPolygon(p);
+        setPolygon(PolygonUtils.createConcavePentagon(x, y, w, h));
     }
     
     FigAcceptEventPoly(Polygon p) {

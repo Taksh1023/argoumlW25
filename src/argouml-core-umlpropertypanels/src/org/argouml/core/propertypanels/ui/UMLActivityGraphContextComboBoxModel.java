@@ -127,12 +127,27 @@ class UMLActivityGraphContextComboBoxModel extends  UMLComboBoxModel {
         private static final long serialVersionUID = -8118983979324112900L;
 
         /**
-         * Returns a shared action to set the context of the ActivityGraph.
-         *
-         * Uses the common ActionSetContextCommon to avoid code duplication.
+         * Constructor for ActionSetCompositeStateConcurrent.
          */
-        public Action getAction() {
-            return new ActionSetContextCommon();
+        protected ActionSetContext() {
+            super(Translator.localize("action.set"), null);
+            // Set the tooltip string:
+            putValue(Action.SHORT_DESCRIPTION, 
+                    Translator.localize("action.set"));
+        }
+
+        /*
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        public void actionPerformed(ActionEvent e) {
+            super.actionPerformed(e);
+            UMLComboBox source = (UMLComboBox) e.getSource();
+            Object target = source.getTarget();
+            if (Model.getFacade().getContext(target)
+                    != source.getSelectedItem()) {
+                Model.getStateMachinesHelper().setContext(
+                        target, source.getSelectedItem());
+            }
         }
     }
 }

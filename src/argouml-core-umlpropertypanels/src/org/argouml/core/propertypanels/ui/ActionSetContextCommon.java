@@ -9,6 +9,7 @@ import org.argouml.ui.UndoableAction;
 
 /**
  * Common Action class to set context for UML elements.
+ *
  * This class merges the duplicated behavior from the inner classes
  * ActionSetContext and ActionSetContextStateMachine.
  */
@@ -24,6 +25,7 @@ class ActionSetContextCommon extends UndoableAction {
 
     /**
      * Handles the action event when a new item is selected in the combo box.
+     *
      * It compares the current context of the target with the selected item,
      * and if they differ, updates the context using StateMachinesHelper.
      */

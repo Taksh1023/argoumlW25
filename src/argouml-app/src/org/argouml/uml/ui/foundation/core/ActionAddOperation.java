@@ -54,6 +54,11 @@ import org.argouml.ui.targetmanager.TargetEvent;
 import org.argouml.ui.targetmanager.TargetListener;
 import org.argouml.ui.targetmanager.TargetManager;
 
+
+// Import the new helper class
+import org.argouml.uml.ui.foundation.core.TargetEventHandler;
+
+
 /**
  * Action to add an operation to a classifier.
  */
@@ -76,21 +81,9 @@ public class ActionAddOperation extends UndoableAction {
     public static ActionAddOperation getTargetFollower() {
         if (targetFollower == null) {
             targetFollower  = new ActionAddOperation();
-            TargetManager.getInstance().addTargetListener(new TargetListener() {
-                public void targetAdded(TargetEvent e) {
-                    setTarget();
-                }
-                public void targetRemoved(TargetEvent e) {
-                    setTarget();
-                }
 
-                public void targetSet(TargetEvent e) {
-                    setTarget();
-                }
-                private void setTarget() {
-                    targetFollower.setEnabled(targetFollower.shouldBeEnabled());
-                }
-            });
+            new TargetEventHandler(targetFollower);
+
             targetFollower.setEnabled(targetFollower.shouldBeEnabled());
         }
         return targetFollower;

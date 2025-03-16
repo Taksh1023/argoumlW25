@@ -56,6 +56,10 @@ import org.tigris.gef.graph.GraphModel;
 import org.tigris.gef.graph.GraphNodeRenderer;
 import org.tigris.gef.presentation.FigNode;
 
+// Import the new helper class
+import org.argouml.uml.ui.foundation.core.TargetEventHandler;
+
+
 /**
  * Action to add a message.
  * @stereotype singleton
@@ -78,21 +82,10 @@ public class ActionAddMessage extends UndoableAction {
     public static ActionAddMessage getTargetFollower() {
         if (targetFollower == null) {
             targetFollower  = new ActionAddMessage();
-            TargetManager.getInstance().addTargetListener(new TargetListener() {
-                public void targetAdded(TargetEvent e) {
-                    setTarget();
-                }
-                public void targetRemoved(TargetEvent e) {
-                    setTarget();
-                }
 
-                public void targetSet(TargetEvent e) {
-                    setTarget();
-                }
-                private void setTarget() {
-                    targetFollower.setEnabled(targetFollower.shouldBeEnabled());
-                }
-            });
+            new TargetEventHandler(targetFollower);
+
+
             targetFollower.setEnabled(targetFollower.shouldBeEnabled());
         }
         return targetFollower;

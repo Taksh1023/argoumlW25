@@ -113,23 +113,12 @@ public class FigAssociationClass
      */
     @Override
     protected void removeFromDiagramImpl() {
-        FigEdgeAssociationClass figEdgeLink = null;
+        //FigEdgeAssociationClass figEdgeLink = null;
         List edges = null;
 
         FigEdgePort figEdgePort = getEdgePort();
-        if (figEdgePort != null) {
-            edges = figEdgePort.getFigEdges();
-        }
+        FigEdgeAssociationClass figEdgeLink = getFigEdgeAssociationClass(figEdgePort);
 
-        if (edges != null) {
-            for (Iterator it = edges.iterator(); it.hasNext()
-                    && figEdgeLink == null;) {
-                Object o = it.next();
-                if (o instanceof FigEdgeAssociationClass) {
-                    figEdgeLink = (FigEdgeAssociationClass) o;
-                }
-            }
-        }
 
         if (figEdgeLink != null) {
             FigNode figClassBox = figEdgeLink.getDestFigNode();
@@ -239,23 +228,12 @@ public class FigAssociationClass
      *         FigAssociationClass.
      */
     public FigClassAssociationClass getAssociationClass() {
-        FigEdgeAssociationClass figEdgeLink = null;
+        //FigEdgeAssociationClass figEdgeLink = null;
         List edges = null;
 
-        FigEdgePort figEdgePort = this.getEdgePort();
-        if (figEdgePort != null) {
-            edges = figEdgePort.getFigEdges();
-        }
+        FigEdgePort figEdgePort = getEdgePort();
+        FigEdgeAssociationClass figEdgeLink = getFigEdgeAssociationClass(figEdgePort);
 
-        if (edges != null) {
-            for (Iterator it = edges.iterator(); it.hasNext()
-                    && figEdgeLink == null;) {
-                Object o = it.next();
-                if (o instanceof FigEdgeAssociationClass) {
-                    figEdgeLink = (FigEdgeAssociationClass) o;
-                }
-            }
-        }
 
         FigNode figClassBox = null;
         if (figEdgeLink != null) {
@@ -275,24 +253,30 @@ public class FigAssociationClass
      *         FigAssociationClass
      */
     public FigEdgeAssociationClass getFigEdgeAssociationClass() {
-        FigEdgeAssociationClass figEdgeLink = null;
+        //FigEdgeAssociationClass figEdgeLink = null;
         List edges = null;
 
-        FigEdgePort figEdgePort = this.getEdgePort();
-        if (figEdgePort != null) {
-            edges = figEdgePort.getFigEdges();
-        }
+        FigEdgePort figEdgePort = getEdgePort();
+        FigEdgeAssociationClass figEdgeLink = getFigEdgeAssociationClass(figEdgePort);
 
-        if (edges != null) {
-            for (Iterator it = edges.iterator(); it.hasNext()
-                    && figEdgeLink == null;) {
-                Object o = it.next();
-                if (o instanceof FigEdgeAssociationClass) {
-                    figEdgeLink = (FigEdgeAssociationClass) o;
-                }
-            }
-        }
 
         return figEdgeLink;
     }
+
+    private FigEdgeAssociationClass getFigEdgeAssociationClass(FigEdgePort figEdgePort) {
+        FigEdgeAssociationClass figEdgeLink = null;
+        if (figEdgePort != null) {
+            List edges = figEdgePort.getFigEdges();
+            if (edges != null) {
+                for (Iterator it = edges.iterator(); it.hasNext() && figEdgeLink == null;) {
+                    Object o = it.next();
+                    if (o instanceof FigEdgeAssociationClass) {
+                        figEdgeLink = (FigEdgeAssociationClass) o;
+                    }
+                }
+            }
+        }
+        return figEdgeLink;
+    }
+
 }

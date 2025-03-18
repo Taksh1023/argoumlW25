@@ -169,7 +169,6 @@ public class Agency extends Observable { //implements java.io.Serialization
             for (Critic c : ((CompoundCritic) cr).getCriticList()) {
                 addCritic(c);
             }
-            return;
         }
     }
 

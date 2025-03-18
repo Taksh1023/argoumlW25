@@ -642,88 +642,84 @@ public class TabConstraints extends AbstractArgoJPanel
          *
          * @param ccl the listener to be removed
          */
-        public void removeConstraintChangeListener(
-                ConstraintChangeListener ccl) {
-            theMEllListeners.remove(ConstraintChangeListener.class, ccl);
-        }
-
-        protected void fireConstraintRemoved(
-                Object mc, int nIdx) {
-            // Guaranteed to return a non-null array
-            Object[] listeners = theMEllListeners.getListenerList();
-
-            ConstraintChangeEvent cce = null;
-
-            // Process the listeners last to first, notifying
-            // those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2) {
-                if (listeners[i] == ConstraintChangeListener.class) {
-                    // Lazily create the event:
-                    if (cce == null) {
-                        cce = new ConstraintChangeEvent(
-                            this,
-                            nIdx,
-                            new CR(mc, nIdx),
-                            null);
-                    }
-                    ((ConstraintChangeListener) listeners[i + 1])
-                        .constraintRemoved(cce);
-                }
-            }
-        }
-
-        protected void fireConstraintAdded() {
-            // Guaranteed to return a non-null array
-            Object[] listeners = theMEllListeners.getListenerList();
-
-            ConstraintChangeEvent cce = null;
-
-            // Process the listeners last to first, notifying
-            // those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2) {
-                if (listeners[i] == ConstraintChangeListener.class) {
-                    // Lazily create the event:
-                    if (cce == null) {
-                        int nIdx = theMAlConstraints.size() - 1;
-                        cce =
-                            new ConstraintChangeEvent(
-                                    this,
-                                    nIdx,
-                                    null,
-                                    representationFor(nIdx));
-                    }
-                    ((ConstraintChangeListener) listeners[i + 1])
-                        .constraintAdded(cce);
-                }
-            }
-        }
-
-              private void notifyConstraintChangeListeners(int nIdx, Object mcOld, Object mcNew) {
-            // Guaranteed to return a non-null array
-            Object[] listeners = theMEllListeners.getListenerList();
-            ConstraintChangeEvent cce = null;
-        
-            // Process the listeners last to first, notifying those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2) {
-                if (listeners[i] == ConstraintChangeListener.class) {
-                    if (cce == null) {
-                        cce = new ConstraintChangeEvent(
-                            this,
-                            nIdx,
-                            new CR(mcOld, nIdx),
-                            new CR(mcNew, nIdx));
-                    }
-                    ((ConstraintChangeListener) listeners[i + 1])
-                        .constraintDataChanged(cce);
-                }
-            }
-        }
-        
-        // Replace duplicate calls with this method
-        protected void fireConstraintDataChanged(int nIdx, Object mcOld, Object mcNew) {
-            notifyConstraintChangeListeners(nIdx, mcOld, mcNew);
-        }  
+public void removeConstraintChangeListener(ConstraintChangeListener ccl) {
+    if (theMEllListeners != null) {
+        theMEllListeners.remove(ConstraintChangeListener.class, ccl);
     }
+}
+
+protected void fireConstraintRemoved(Object mc, int nIdx) {
+    if (theMEllListeners == null) return;
+    
+    Object[] listeners = theMEllListeners.getListenerList();
+    if (listeners.length == 0) return;
+
+    ConstraintChangeEvent cce = null;
+
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+        if (listeners[i] == ConstraintChangeListener.class) {
+            if (cce == null) {
+                cce = new ConstraintChangeEvent(
+                    this, nIdx,
+                    (mc != null) ? new CR(mc, nIdx) : null,
+                    null
+                );
+            }
+            ((ConstraintChangeListener) listeners[i + 1]).constraintRemoved(cce);
+        }
+    }
+}
+
+protected void fireConstraintAdded() {
+    if (theMEllListeners == null || theMAlConstraints == null || theMAlConstraints.isEmpty()) return;
+
+    Object[] listeners = theMEllListeners.getListenerList();
+    if (listeners.length == 0) return;
+
+    ConstraintChangeEvent cce = null;
+    int nIdx = theMAlConstraints.size() - 1;
+
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+        if (listeners[i] == ConstraintChangeListener.class) {
+            if (cce == null) {
+                cce = new ConstraintChangeEvent(
+                    this, nIdx,
+                    null,
+                    representationFor(nIdx)
+                );
+            }
+            ((ConstraintChangeListener) listeners[i + 1]).constraintAdded(cce);
+        }
+    }
+}
+
+private void notifyConstraintChangeListeners(int nIdx, Object mcOld, Object mcNew) {
+    if (theMEllListeners == null) return;
+    
+    Object[] listeners = theMEllListeners.getListenerList();
+    if (listeners.length == 0) return;
+
+    ConstraintChangeEvent cce = null;
+
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+        if (listeners[i] == ConstraintChangeListener.class) {
+            if (cce == null) {
+                cce = new ConstraintChangeEvent(
+                    this, nIdx,
+                    (mcOld != null) ? new CR(mcOld, nIdx) : null,
+                    (mcNew != null) ? new CR(mcNew, nIdx) : null
+                );
+            }
+            ((ConstraintChangeListener) listeners[i + 1]).constraintDataChanged(cce);
+        }
+    }
+}
+
+protected void fireConstraintDataChanged(int nIdx, Object mcOld, Object mcNew) {
+    notifyConstraintChangeListeners(nIdx, mcOld, mcNew);
+}
+
+
 
     /*
      * @see org.argouml.ui.targetmanager.TargetListener#targetAdded(

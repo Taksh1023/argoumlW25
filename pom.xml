@@ -53,11 +53,7 @@ This project is the virtual project that includes all core subprojects.
         <url>${github.site.pages}/${github.site.repositoryName}</url>
      </site>
   </distributionManagement>
-  <dependency>
-  <groupId>org.apache.xmlgraphics</groupId>
-  <artifactId>batik-dom</artifactId>
-  <version>1.15</version>
-</dependency>
+
 
   <repositories>
     <!-- Repo specified to find parentpom remotely. -->

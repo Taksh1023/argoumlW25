@@ -124,7 +124,7 @@ public class ProfileMeta extends Profile {
                     ToDoItem.MED_PRIORITY, null, null,
                     "http://argouml.tigris.org/"));
         } catch (InvalidOclException e) {
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Invalid OCL expression while loading metaprofile critic", e);
         }
 
         try {

@@ -108,9 +108,19 @@ public class TestProfileConfigurationFilePersister extends TestCase {
         
         Object umlModel = ProfileFacade.getManager().getUMLProfile()
                 .getProfilePackages().iterator().next();
+
         final String umlModelName = Model.getFacade().getName(umlModel);
         assertNotNull(umlModelName);
-        File tempFile = File.createTempFile(umlModelName, ".xmi");
+
+// Sanitize model name to remove any risky characters
+        String safeModelName = umlModelName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+        if (safeModelName.isEmpty()) {
+            safeModelName = "defaultModel";
+        }
+
+        File tempFile = File.createTempFile(safeModelName, ".xmi");
+
+
         FileOutputStream stream = new FileOutputStream(tempFile);
         XmiWriter xmiWriter = Model.getXmiWriter(umlModel, stream, "version-x");
         xmiWriter.write();

@@ -74,6 +74,9 @@ This project is the virtual project that includes all core subprojects.
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
       <version>1.15</version> <!-- ✅ Updated from 1.14 -->
+       <groupId>xalan</groupId>
+  <artifactId>xalan</artifactId>
+  <version>2.7.3</version>
     </dependency>
   </dependencies>
 </project>

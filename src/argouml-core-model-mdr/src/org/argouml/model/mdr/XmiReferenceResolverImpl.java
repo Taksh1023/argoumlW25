@@ -615,9 +615,14 @@ class XmiReferenceResolverImpl extends XmiContext {
                 HttpURLConnection huc = (HttpURLConnection) connection;
                 if (huc.getResponseCode() / 100 == 3) {
                     String whereto = huc.getHeaderField("Location");
-                    url = new URL(whereto);
-                    connection = url.openConnection();
-                    stream = connection.getInputStream();
+                    if (isValidRedirect(whereto)) {
+                        url = new URL(whereto);
+                        connection = url.openConnection();
+                        stream = connection.getInputStream();
+                    } else {
+                        LOG.log(Level.WARNING, "Blocked redirect to untrusted location: " + whereto);
+                        return null;
+                    }
                 }
             } else if (connection instanceof HttpsURLConnection) {
                 HttpsURLConnection hsuc = (HttpsURLConnection) connection;
@@ -637,6 +642,28 @@ class XmiReferenceResolverImpl extends XmiContext {
             stream = null;
         }
         return url;
+    }
+
+    /* Added a Function to validate
+     * URL's that are getting passed to new URL to open a connection.
+     */
+    private boolean isValidRedirect(String location) {
+        try {
+            URL redirectedUrl = new URL(location);
+            String host = redirectedUrl.getHost().toLowerCase();
+            String protocol = redirectedUrl.getProtocol().toLowerCase();
+
+            // Allow only HTTPS and known safe hosts
+            return "https".equals(protocol) && (
+                    host.endsWith("argouml.org") ||
+                            host.endsWith("eclipse.org") ||
+                            host.endsWith("github.com") ||
+                            host.endsWith("sourceforge.net") ||
+                            host.endsWith("university.edu") ||
+                            host.endsWith("your-company.com")); // <-- Replace with actual domains
+        } catch (MalformedURLException e) {
+            return false;
+        }
     }
 
     /////////////////////////////////////////////////////

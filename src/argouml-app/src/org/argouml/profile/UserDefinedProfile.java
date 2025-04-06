@@ -772,7 +772,7 @@ public class UserDefinedProfile extends Profile {
         try {
             bis.read(buf);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Failed to close input stream for file: " + f.getPath(), e);
         }
 
         descriptor.img = new ImageIcon(buf).getImage();

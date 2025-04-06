@@ -69,20 +69,4 @@ This project is the virtual project that includes all core subprojects.
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
-   <dependencies>
-   <dependency>
-      <groupId>org.apache.xmlgraphics</groupId>
-      <artifactId>batik-dom</artifactId>
-      <version>1.15</version> <!-- ✅ Updated from 1.14 -->
-       <groupId>org.apache.xmlgraphics</groupId>
-  <artifactId>batik-dom</artifactId>
-  <version>1.15</version>
-  <exclusions>
-    <exclusion>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-    </exclusion>
-  </exclusions>
-    </dependency>
-  </dependencies>
 </project>

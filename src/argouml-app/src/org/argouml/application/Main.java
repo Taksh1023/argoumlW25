@@ -48,8 +48,12 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,6 +115,12 @@ import org.argouml.util.logging.SimpleTimer;
  *
  */
 public class Main {
+
+    private static final Map<String, Class<? extends CommandLineInterface>> COMMAND_REGISTRY = 
+    Collections.unmodifiableMap(new HashMap<String, Class<? extends CommandLineInterface>>() {{
+        put("exampleCommand", org.argouml.example.ExampleCommand.class);
+        // Add all allowed commands here
+    }});
 
     // initialized in static initializer block below
     private static final Logger LOG;
@@ -636,67 +646,40 @@ public class Main {
      * @param list The commands, a list of strings.
      */
     private static void performCommandsInternal(List<String> list) {
+        if (list == null) {
+            return;
+        }
+    
         for (String commandString : list) {
-            int pos = commandString.indexOf('=');
-
-            String commandName;
-            String commandArgument;
-
-            if (pos == -1) {
-                commandName = commandString;
-                commandArgument = null;
-            } else {
-                commandName = commandString.substring(0, pos);
-                commandArgument = commandString.substring(pos + 1);
+            if (commandString == null || commandString.trim().isEmpty()) {
+                continue;
             }
-
-            // Perform one command.
-            Class c;
+    
+            // Parse command and argument
+            String[] parts = commandString.split("=", 2);
+            String commandName = parts[0];
+            String commandArgument = parts.length > 1 ? parts[1] : null;
+    
+            // Lookup command in registry
+            Class<? extends CommandLineInterface> commandClass = COMMAND_REGISTRY.get(commandName);
+            if (commandClass == null) {
+                System.out.println("Unknown command: " + commandName);
+                continue;
+            }
+    
+            // Execute the command
             try {
-                c = Class.forName(commandName);
-            } catch (ClassNotFoundException e) {
-                System.out.println("Cannot find the command: " + commandName);
-                continue;
-            }
-
-            // Now create a new object.
-            Object o = null;
-            try {
-                o = c.newInstance();
-            } catch (InstantiationException e) {
-                System.out.println(commandName
-                        + " could not be instantiated - skipping"
-                        + " (InstantiationException)");
-                continue;
-            } catch (IllegalAccessException e) {
-                System.out.println(commandName
-                        + " could not be instantiated - skipping"
-                        + " (IllegalAccessException)");
-                continue;
-            }
-
-
-            if (!(o instanceof CommandLineInterface)) {
-                System.out.println(commandName
-                        + " is not a command - skipping.");
-                continue;
-            }
-
-            CommandLineInterface clio = (CommandLineInterface) o;
-
-            System.out.println("Performing command "
-                    + commandName + "( "
-                    + (commandArgument == null
-                            ? "" : commandArgument) + " )");
-            boolean result = clio.doCommand(commandArgument);
-            if (!result) {
-                System.out.println("There was an error executing "
-                        + "the command "
-                        + commandName + "( "
-                        + (commandArgument == null
-                                ? "" : commandArgument) + " )");
-                System.out.println("Aborting the rest of the commands.");
-                return;
+                CommandLineInterface command = commandClass.getDeclaredConstructor().newInstance();
+                System.out.println("Performing command " + commandName + 
+                    (commandArgument != null ? " with argument: " + commandArgument : ""));
+                
+                boolean result = command.doCommand(commandArgument);
+                if (!result) {
+                    System.out.println("Command " + commandName + " failed");
+                }
+            } catch (Exception e) {
+                System.out.println("Error executing command " + commandName + ": " + e.getMessage());
+                LOG.log(Level.SEVERE, "Command execution failed", e);
             }
         }
     }

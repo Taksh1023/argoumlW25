@@ -16,3 +16,4 @@
 /.settings
 /src/*/.settings
 .idea/
+.fake

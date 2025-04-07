@@ -813,9 +813,14 @@ public class UserDefinedProfile extends Profile {
             }
             descriptor.img = new ImageIcon(buf).getImage();
         } catch (IOException e) {
+        try {
+            // code that might throw an exception (e.g., loading image or handling file)
+        } catch (IOException e) {
             LOG.log(Level.SEVERE, "Error loading image for stereotype: " + stereotype, e);
+            LOG.log(Level.WARNING, "Failed to close input stream for file: " + f.getPath(), e);
             throw e;
         }
+
 
         return descriptor;
     }

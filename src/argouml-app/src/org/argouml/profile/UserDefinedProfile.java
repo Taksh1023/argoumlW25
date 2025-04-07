@@ -83,6 +83,9 @@ public class UserDefinedProfile extends Profile {
     private static final Logger LOG =
         Logger.getLogger(UserDefinedProfile.class.getName());
 
+    private static final long MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static final File ALLOWED_BASE_DIR = new File("profiles/images").getAbsoluteFile();
+
     private String displayName;
 
     private File modelFile;
@@ -758,24 +761,61 @@ public class UserDefinedProfile extends Profile {
         }
     }
 
-    private FigNodeDescriptor loadImage(String stereotype, File f)
-        throws IOException {
-        FigNodeDescriptor descriptor = new FigNodeDescriptor();
-        descriptor.length = (int) f.length();
-        descriptor.src = f.getPath();
-        descriptor.stereotype = stereotype;
-
-        BufferedInputStream bis = new BufferedInputStream(
-                new FileInputStream(f));
-
-        byte[] buf = new byte[descriptor.length];
-        try {
-            bis.read(buf);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private FigNodeDescriptor loadImage(String stereotype, File f) throws IOException {
+        // Validate input parameters
+        if (stereotype == null || stereotype.trim().isEmpty()) {
+            throw new IOException("Stereotype cannot be null or empty");
         }
 
-        descriptor.img = new ImageIcon(buf).getImage();
+        if (f == null) {
+            throw new IOException("File cannot be null");
+        }
+
+        // Get and validate canonical path
+        String canonicalPath = f.getCanonicalPath();
+        String allowedPath = ALLOWED_BASE_DIR.getCanonicalPath();
+
+        if (!canonicalPath.startsWith(allowedPath)) {
+            throw new IOException("Access denied: File must be within " + allowedPath);
+        }
+
+        // Validate file attributes
+        if (!f.exists()) {
+            throw new IOException("File does not exist: " + canonicalPath);
+        }
+        if (!f.isFile()) {
+            throw new IOException("Path is not a file: " + canonicalPath);
+        }
+        if (!f.canRead()) {
+            throw new IOException("Cannot read file: " + canonicalPath);
+        }
+
+        // Validate file size
+        long fileSize = f.length();
+        if (fileSize <= 0) {
+            throw new IOException("File is empty: " + canonicalPath);
+        }
+        if (fileSize > MAX_IMAGE_SIZE) {
+            throw new IOException("File size exceeds maximum limit: " + canonicalPath);
+        }
+
+        FigNodeDescriptor descriptor = new FigNodeDescriptor();
+        descriptor.length = (int) fileSize;
+        descriptor.src = canonicalPath;
+        descriptor.stereotype = stereotype;
+
+        // Read file content with try-with-resources
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f))) {
+            byte[] buf = new byte[descriptor.length];
+            int bytesRead = bis.read(buf);
+            if (bytesRead != descriptor.length) {
+                throw new IOException("Failed to read complete file content");
+            }
+            descriptor.img = new ImageIcon(buf).getImage();
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Error loading image for stereotype: " + stereotype, e);
+            throw e;
+        }
 
         return descriptor;
     }

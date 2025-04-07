@@ -48,6 +48,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -636,6 +637,12 @@ public class Main {
      * @param list The commands, a list of strings.
      */
     private static void performCommandsInternal(List<String> list) {
+
+        final List<String> ALLOWED_PACKAGES = Arrays.asList(
+        "org.argouml.",
+        "com.argouml."
+        );
+
         for (String commandString : list) {
             int pos = commandString.indexOf('=');
 
@@ -650,8 +657,28 @@ public class Main {
                 commandArgument = commandString.substring(pos + 1);
             }
 
+            // Validate the command class name
+            if (commandName == null || commandName.isEmpty()) {
+                System.out.println("Empty command name - skipping");
+                continue;
+            }
+
+            // Check if the command is in allowed packages
+            boolean allowed = false;
+            for (String prefix : ALLOWED_PACKAGES) {
+                if (commandName.startsWith(prefix)) {
+                    allowed = true;
+                    break;
+                }
+            }
+
+            if (!allowed) {
+                System.out.println("Command " + commandName + " is not in allowed packages - skipping");
+                continue;
+            }
+
             // Perform one command.
-            Class c;
+            Class<?> c;  // Changed from raw Class to Class<?>
             try {
                 c = Class.forName(commandName);
             } catch (ClassNotFoundException e) {
